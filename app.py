@@ -1,11 +1,12 @@
 import os
-from fastapi import FastAPI, HTTPException
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-# Create FastAPI app
 app = FastAPI()
 
-# Define request models
 class GenerationRequest(BaseModel):
     prompt: str
     max_tokens: int = 100
@@ -14,35 +15,39 @@ class GenerationRequest(BaseModel):
 class GenerationResponse(BaseModel):
     generated_text: str
 
-# Global variable to track requests
 request_count = 0
 
-# Health check endpoint; required for Runpod to monitor worker health
+# Required for Runpod to monitor worker health
 @app.get("/ping")
 async def health_check():
-    return {"status": "healthy"}
+    # The response body doesn't matter, it's all about the status code:
+    # 200 - Healthy
+    # 204 - Initializing (maybe your model is still loading)
+    # Anything else - Unhealthy
+    return JSONResponse(status_code=200, content={"status": "healthy"})
 
 # Our custom generation endpoint
 @app.post("/generate", response_model=GenerationResponse)
 async def generate(request: GenerationRequest):
     global request_count
     request_count += 1
-
-    # A simple mock implementation; we'll replace this with an actual model later
+    # Simple mock implementation; you'd do your actual work here!
     generated_text = f"Response to: {request.prompt} (request #{request_count})"
-
     return {"generated_text": generated_text}
 
-# A simple endpoint to show request stats
 @app.get("/stats")
 async def stats():
     return {"total_requests": request_count}
 
-# Run the app when the script is executed
+@app.get("/")
+async def root():
+    datacenter_id = os.getenv("RUNPOD_DC_ID")
+    return {"message": f"Hello, {datacenter_id if datacenter_id else 'world'}!".strip()}
+
 if __name__ == "__main__":
     import uvicorn
 
-    # When you deploy the endpoint, make sure to expose port 5000
+    # When you deploy your endpoint, make sure to expose port 5000
     # And add it as an environment variable in the Runpod console
     port = int(os.getenv("PORT", "5000"))
 

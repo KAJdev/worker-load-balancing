@@ -21,9 +21,9 @@ docker push YOUR_DOCKER_USERNAME/loadbalancer-example:v1.0
 YOUR_DOCKER_USERNAME/loadbalancer-example:v1.0
 ```
 
-4. Make sure to expose HTTP ports 5000 and 5001 in your endpoint's container configuration, and add these environmnet variables:
+4. Make sure to expose HTTP port 5000 in your endpoint's container configuration, and add these environment variables:
     - `PORT = 5000`
-    - `PORT_HEALTH = 5001`.
+    - `PORT_HEALTH = 5000`
 
 ## Test requests
 
