@@ -5,6 +5,7 @@ This repo contains all the files necessary to create a basic load balancing work
 ## Deployment steps
 
 1. Build the image:
+2. 
 
 ```bash
 docker build --platform linux/amd64 -t YOUR_DOCKER_USERNAME/loadbalancer-example:v1.0 . 
